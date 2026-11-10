@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Creative Sandbox — Break Analysis Paralysis</title>
+    <style>
+      :root {
+        --bg-black: #000000;
+        --panel-dark: #0a0a0a;
+        --amber-bright: #ffb300;
+        --amber-dim: #b37d00;
+        --text-white: #ffffff;
+        --text-grey: #808080;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: var(--bg-black);
+        color: var(--text-white);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+        overflow-x: hidden;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .logo {
+        font-size: 40px;
+        margin-bottom: 15px;
+        user-select: none;
+      }
+      h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--amber-bright);
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+      }
+      .subtitle {
+        font-size: 16px;
+        color: var(--text-grey);
+        margin-bottom: 40px;
+        line-height: 1.5;
+      }
+      .cta-btn {
+        display: inline-block;
+        width: 100%;
+        max-width: 320px;
+        background-color: transparent;
+        color: var(--amber-bright);
+        border: 2px solid var(--amber-bright);
+        padding: 16px 32px;
+        font-size: 17px;
+        font-weight: 700;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 0 10px rgba(255, 179, 0, 0.1);
+      }
+      .cta-btn:hover {
+        background-color: var(--amber-bright);
+        color: var(--bg-black);
+        box-shadow: 0 0 20px rgba(255, 179, 0, 0.3);
+      }
+      .feature-list {
+        margin-top: 50px;
+        text-align: left;
+        background: var(--panel-dark);
+        border: 1px solid rgba(255, 179, 0, 0.1);
+        padding: 25px;
+        border-radius: 6px;
+      }
+      .feature-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+      }
+      .feature-item:last-child {
+        margin-bottom: 0;
+      }
+      .feature-icon {
+        margin-right: 12px;
+        font-size: 18px;
+        margin-top: 2px;
+      }
+      .feature-text strong {
+        color: var(--amber-bright);
+        display: block;
+        margin-bottom: 2px;
+      }
+      .feature-text p {
+        font-size: 14px;
+        color: var(--text-grey);
+        line-height: 1.4;
+      }
+      footer {
+        margin-top: 60px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">⚡</div>
+      <h1>The Creative Sandbox</h1>
+      <div class="subtitle">
+        Stop browsing. Start executing. Turn passive web content into high-speed
+        creative sprints with our precision Chrome Extension.
+      </div>
+
+      <!-- Direct Deep Link to your Extension Store page -->
+      <a href="https://google.com" class="cta-btn" target="_blank">
+        ⚡ Add to Chrome
+      </a>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feature-icon">🎚️</span>
+          <div class="feature-text">
+            <strong>Instant Input Processing</strong>
+            <p>
+              Highlight any string of text across any webpage, right-click, and
+              feed it straight into your processing room panel.
+            </p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🃏</span>
+          <div class="feature-text">
+            <strong>Constraint Card Engine</strong>
+            <p>
+              Disrupt comfort zones instantly with curated friction loops: The
+              Devil's Advocate, Dictionary Steal, or Cliffhanger.
+            </p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">⏳</span>
+          <div class="feature-text">
+            <strong>Unforgiving Speed Timers</strong>
+            <p>
+              Force execution and suppress backtracking. Write forward against a
+              hard countdown clock until the project shifts.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        &copy; 2026 The Creative Sandbox. Free, serverless, and secure.
+      </footer>
+    </div>
+  </body>
+</html>
