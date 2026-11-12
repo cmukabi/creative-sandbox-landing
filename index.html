@@ -1,172 +1,1076 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Creative Sandbox — Break Analysis Paralysis</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      The Creative Sandbox — Turn reading into writing | Chrome extension
+    </title>
+    <meta
+      name="description"
+      content="Highlight any passage on the web and turn it into a timed writing sprint. Constraint cards, poetry forms, song studio and one-click export to Substack, social feeds and poetry journals. Version 1.1 for Chrome."
+    />
+    <link rel="canonical" href="https://creativesandbox.co.uk/" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://creativesandbox.co.uk/" />
+    <meta
+      property="og:title"
+      content="The Creative Sandbox — Turn reading into writing"
+    />
+    <meta
+      property="og:description"
+      content="Highlight a passage, pick a constraint card, write forward. Sonnets, haiku, songs and sprints — exported in one click. Version 1.1 for Chrome."
+    />
+    <meta property="og:site_name" content="The Creative Sandbox" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="The Creative Sandbox — Turn reading into writing"
+    />
+    <meta
+      name="twitter:description"
+      content="Constraint cards, poetry forms, a song studio and one-click export. Version 1.1 for Chrome."
+    />
+
     <style>
       :root {
-        --bg-black: #000000;
-        --panel-dark: #0a0a0a;
-        --amber-bright: #ffb300;
-        --amber-dim: #b37d00;
-        --text-white: #ffffff;
-        --text-grey: #808080;
+        --bg: #000000;
+        --surface: #0a0a0a;
+        --surface-2: #141414;
+        --border: #262626;
+        --text: #f2f2f2;
+        --muted: #9a9a9a;
+        --amber: #ffb300;
+        --amber-dim: rgba(255, 179, 0, 0.14);
+        --rose: #fb7185;
+        --radius: 12px;
+        --max: 720px;
       }
-      * {
+
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
-        margin: 0;
-        padding: 0;
       }
+
+      html {
+        scroll-behavior: smooth;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
       body {
-        background-color: var(--bg-black);
-        color: var(--text-white);
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 20px;
-        overflow-x: hidden;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          17px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
       }
-      .container {
-        max-width: 600px;
-        width: 100%;
-        text-align: center;
-        padding: 40px 20px;
+
+      a {
+        color: var(--amber);
       }
-      .logo {
-        font-size: 40px;
-        margin-bottom: 15px;
-        user-select: none;
-      }
-      h1 {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--amber-bright);
-        margin-bottom: 10px;
-        letter-spacing: -0.5px;
-      }
-      .subtitle {
-        font-size: 16px;
-        color: var(--text-grey);
-        margin-bottom: 40px;
-        line-height: 1.5;
-      }
-      .cta-btn {
-        display: inline-block;
-        width: 100%;
-        max-width: 320px;
-        background-color: transparent;
-        color: var(--amber-bright);
-        border: 2px solid var(--amber-bright);
-        padding: 16px 32px;
-        font-size: 17px;
-        font-weight: 700;
-        text-decoration: none;
-        border-radius: 4px;
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 0 10px rgba(255, 179, 0, 0.1);
-      }
-      .cta-btn:hover {
-        background-color: var(--amber-bright);
-        color: var(--bg-black);
-        box-shadow: 0 0 20px rgba(255, 179, 0, 0.3);
-      }
-      .feature-list {
-        margin-top: 50px;
-        text-align: left;
-        background: var(--panel-dark);
-        border: 1px solid rgba(255, 179, 0, 0.1);
-        padding: 25px;
+      a:focus-visible,
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--amber);
+        outline-offset: 3px;
         border-radius: 6px;
       }
-      .feature-item {
+
+      .skip {
+        position: absolute;
+        left: -9999px;
+        top: 8px;
+        padding: 8px 14px;
+        background: var(--amber);
+        color: #000;
+        font-weight: 700;
+        border-radius: 6px;
+        z-index: 10;
+      }
+      .skip:focus {
+        left: 12px;
+      }
+
+      .wrap {
+        width: 100%;
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 0 22px;
+      }
+
+      /* Header ---------------------------------------------------------------- */
+      header.site {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: rgba(0, 0, 0, 0.88);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      header.site .wrap {
         display: flex;
-        align-items: flex-start;
-        margin-bottom: 15px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 60px;
       }
-      .feature-item:last-child {
-        margin-bottom: 0;
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 800;
+        letter-spacing: 0.01em;
       }
-      .feature-icon {
-        margin-right: 12px;
-        font-size: 18px;
-        margin-top: 2px;
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: var(--amber);
+        color: #000;
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+        font-weight: 900;
       }
-      .feature-text strong {
-        color: var(--amber-bright);
+      .header-cta {
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: #000;
+        background: var(--amber);
+        padding: 8px 14px;
+        border-radius: 8px;
+        white-space: nowrap;
+      }
+
+      /* Hero ------------------------------------------------------------------ */
+      .hero {
+        padding-top: 72px;
+        padding-bottom: 56px;
+        text-align: center;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border: 1px solid rgba(255, 179, 0, 0.45);
+        border-radius: 999px;
+        background: var(--amber-dim);
+        color: var(--amber);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--amber);
+      }
+      h1 {
+        margin: 22px 0 16px;
+        font-size: clamp(36px, 7vw, 56px);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        font-weight: 900;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--amber);
+      }
+      .lede {
+        margin: 0 auto;
+        max-width: 560px;
+        color: var(--muted);
+        font-size: 19px;
+      }
+
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 32px;
+        padding: 16px 26px;
+        border-radius: 10px;
+        background: var(--amber);
+        color: #000;
+        font-size: 15px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        box-shadow: 0 0 32px rgba(255, 179, 0, 0.25);
+        transition:
+          transform 120ms ease,
+          box-shadow 120ms ease;
+      }
+      .cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 44px rgba(255, 179, 0, 0.38);
+      }
+      .cta-note {
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* Mock panel ------------------------------------------------------------ */
+      .mock {
+        margin: 48px auto 0;
+        max-width: 420px;
+        text-align: left;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+        overflow: hidden;
+        box-shadow:
+          0 24px 60px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 179, 0, 0.06);
+      }
+      .mock-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 800;
+        font-size: 15px;
+      }
+      .mock-timer {
+        color: var(--rose);
+        font:
+          800 20px/1 ui-monospace,
+          "SF Mono",
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      .mock-bar {
+        height: 4px;
+        margin: 0 16px;
+        background: rgba(251, 113, 133, 0.18);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .mock-bar span {
+        display: block;
+        width: 72%;
+        height: 100%;
+        background: var(--rose);
+      }
+      .mock-body {
+        padding: 14px 16px 16px;
+        display: grid;
+        gap: 10px;
+      }
+      .mock-label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .mock-row {
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 8px;
+      }
+      .mock-field {
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface-2);
+        font-size: 13px;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mock-card {
+        padding: 12px;
+        border: 1px solid var(--amber);
+        border-radius: 8px;
+        background: #050505;
+        font-size: 13px;
+      }
+      .mock-card b {
+        color: var(--amber);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .mock-check {
+        margin-top: 6px;
+        color: var(--amber);
+        font:
+          600 12px ui-monospace,
+          "SF Mono",
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      .mock-editor {
+        min-height: 76px;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 179, 0, 0.5);
+        border-radius: 8px;
+        background: #000;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .mock-editor .hdr {
+        color: var(--muted);
+      }
+      .caret {
+        display: inline-block;
+        width: 2px;
+        height: 14px;
+        background: var(--rose);
+        vertical-align: -2px;
+        animation: blink 1s steps(1) infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      .mock-launch {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      .mock-launch span {
+        padding: 8px 4px;
+        border-radius: 7px;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+      }
+      .l-sub {
+        background: #ff6719;
+        color: #0b0b0b;
+      }
+      .l-soc {
+        background: #fff;
+        color: #0b0b0b;
+      }
+      .l-poem {
+        background: var(--amber);
+        color: #000;
+      }
+
+      /* Sections -------------------------------------------------------------- */
+      section {
+        padding: 56px 0;
+        border-top: 1px solid var(--border);
+      }
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--amber);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: clamp(26px, 5vw, 34px);
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        font-weight: 900;
+      }
+      .section-intro {
+        margin: 0 0 28px;
+        color: var(--muted);
+      }
+
+      .steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+        counter-reset: step;
+      }
+      .steps li {
+        counter-increment: step;
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        gap: 14px;
+        align-items: start;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .steps li::before {
+        content: counter(step);
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--amber-dim);
+        border: 1px solid rgba(255, 179, 0, 0.45);
+        color: var(--amber);
+        font-weight: 900;
+      }
+      .steps strong {
         display: block;
         margin-bottom: 2px;
       }
-      .feature-text p {
-        font-size: 14px;
-        color: var(--text-grey);
-        line-height: 1.4;
+      .steps span {
+        color: var(--muted);
+        font-size: 15px;
       }
-      footer {
-        margin-top: 60px;
+
+      .cards {
+        display: grid;
+        gap: 14px;
+      }
+      .card {
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+      .card.feature {
+        border-color: rgba(255, 179, 0, 0.55);
+        box-shadow: 0 0 24px rgba(255, 179, 0, 0.06);
+      }
+      .card-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .card-icon {
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: #000;
+        border: 1px solid rgba(255, 179, 0, 0.45);
+        font-size: 22px;
+      }
+      .card-kicker {
+        display: block;
         font-size: 12px;
-        color: rgba(255, 255, 255, 0.3);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--amber);
+      }
+      .card h3 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.25;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .card ul {
+        margin: 12px 0 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .card li + li {
+        margin-top: 4px;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 14px;
+      }
+      .tag {
+        padding: 4px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface-2);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .tag.amber {
+        border-color: rgba(255, 179, 0, 0.5);
+        color: var(--amber);
+        background: var(--amber-dim);
+      }
+
+      .free-write {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border: 1px dashed rgba(255, 179, 0, 0.45);
+        border-radius: var(--radius);
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .free-write b {
+        color: var(--text);
+      }
+
+      .keys {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .key {
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface-2);
+        text-align: center;
+      }
+      .key strong {
+        display: block;
+        font-size: 15px;
+      }
+      .key span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      details {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface);
+        padding: 0 18px;
+      }
+      details + details {
+        margin-top: 10px;
+      }
+      summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 16px 0;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::after {
+        content: "+";
+        color: var(--amber);
+        font-weight: 900;
+      }
+      details[open] summary::after {
+        content: "–";
+      }
+      details p {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .final {
+        text-align: center;
+        padding: 72px 0;
+      }
+      .final h2 {
+        margin-bottom: 8px;
+      }
+
+      footer.site {
+        border-top: 1px solid var(--border);
+        padding: 28px 0 40px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      footer.site .wrap {
+        display: grid;
+        gap: 8px;
+        text-align: center;
+      }
+      footer.site a {
+        color: var(--muted);
+      }
+      footer.site a:hover {
+        color: var(--amber);
+      }
+
+      @media (max-width: 520px) {
+        body {
+          font-size: 16px;
+        }
+        .hero {
+          padding-top: 52px;
+        }
+        .keys {
+          grid-template-columns: 1fr;
+        }
+        .header-cta {
+          padding: 7px 11px;
+          font-size: 12px;
+        }
+        .brand {
+          font-size: 15px;
+          white-space: nowrap;
+          gap: 8px;
+        }
+        .brand-mark {
+          width: 24px;
+          height: 24px;
+          font-size: 13px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="logo">⚡</div>
-      <h1>The Creative Sandbox</h1>
-      <div class="subtitle">
-        Stop browsing. Start executing. Turn passive web content into high-speed
-        creative sprints with our precision Chrome Extension.
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site">
+      <div class="wrap">
+        <a class="brand" href="#top" aria-label="The Creative Sandbox, home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          The Creative Sandbox
+        </a>
+        <a
+          class="header-cta"
+          href="https://google.com"
+          target="_blank"
+          rel="noopener"
+          >Add to Chrome</a
+        >
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Hero -->
+      <div class="wrap hero" id="top">
+        <span class="badge"
+          ><span class="badge-dot" aria-hidden="true"></span>Version 1.1 · Now
+          on the Chrome Web Store</span
+        >
+        <h1>Turn what you read into <em>what you write.</em></h1>
+        <p class="lede">
+          Highlight any passage on the web, pick a constraint card and write
+          forward against the clock. Sonnets, haiku, songs and sprints —
+          exported in one click.
+        </p>
+        <a class="cta" href="https://google.com" target="_blank" rel="noopener">
+          Add to Chrome — it's free
+        </a>
+        <p class="cta-note">Works out of the box. No account needed.</p>
+
+        <div
+          class="mock"
+          role="img"
+          aria-label="The Creative Sandbox side panel: a Book source, Card 3 set to Haiku with a 5 7 5 syllable check, a writing canvas and three Launchpad buttons."
+        >
+          <div class="mock-head">
+            <span>The Creative Sandbox</span
+            ><span class="mock-timer">27:21</span>
+          </div>
+          <div class="mock-bar"><span></span></div>
+          <div class="mock-body">
+            <div class="mock-label">Source</div>
+            <div class="mock-row">
+              <div class="mock-field">Book</div>
+              <div class="mock-field">The Narrow Road to the Deep North</div>
+            </div>
+            <div class="mock-field">Matsuo Bashō</div>
+            <div class="mock-card">
+              <b>🎰 Poetry mode · Haiku</b>
+              <div>3 lines · 5 / 7 / 5 syllables</div>
+              <div class="mock-check">Lines 3/3 · Syllables 5✓ · 7✓ · 5✓</div>
+            </div>
+            <div class="mock-editor">
+              <span class="hdr">[HAIKU · 5 · 7 · 5]</span><br />
+              An old silent pond<br />
+              A frog jumps into the pond<br />
+              Splash, silence again<span
+                class="caret"
+                aria-hidden="true"
+              ></span>
+            </div>
+            <div class="mock-launch" aria-hidden="true">
+              <span class="l-sub">SUBSTACK DRAFTS</span>
+              <span class="l-soc">SOCIAL FEEDS</span>
+              <span class="l-poem">SUBMIT POEM ▾</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Direct Deep Link to your Extension Store page -->
-      <a href="https://google.com" class="cta-btn" target="_blank">
-        ⚡ Add to Chrome
-      </a>
+      <!-- How it works -->
+      <section id="how">
+        <div class="wrap">
+          <p class="eyebrow">How it works</p>
+          <h2>From passage to published in three moves</h2>
+          <p class="section-intro">
+            The Creative Sandbox slides in beside any page, so the spark and the
+            draft live side by side.
+          </p>
+          <ol class="steps">
+            <li>
+              <div>
+                <strong>Highlight &amp; send</strong
+                ><span
+                  >Select a passage, right-click
+                  <em>Send to Creative Sandbox</em> — or tap the toolbar icon
+                  for a blank sprint.</span
+                >
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Pick a card &amp; write forward</strong
+                ><span
+                  >A 30-minute sprint starts. Backspace is locked, so you keep
+                  moving instead of editing.</span
+                >
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Polish &amp; launch</strong
+                ><span
+                  >Unlock the Polish Box, tidy the draft, then export it in one
+                  click.</span
+                >
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
 
-      <div class="feature-list">
-        <div class="feature-item">
-          <span class="feature-icon">🎚️</span>
-          <div class="feature-text">
-            <strong>Instant Input Processing</strong>
+      <!-- Source picker -->
+      <section id="source">
+        <div class="wrap">
+          <p class="eyebrow">New in 1.1</p>
+          <h2>Smart Source Picker</h2>
+          <p class="section-intro">
+            Credit where it's due, without the copy-paste.
+          </p>
+          <div class="card feature">
+            <div class="card-top">
+              <span class="card-icon" aria-hidden="true">📚</span>
+              <div>
+                <span class="card-kicker">Automatic attribution</span>
+                <h3>Every passage remembers where it came from</h3>
+              </div>
+            </div>
             <p>
-              Highlight any string of text across any webpage, right-click, and
-              feed it straight into your processing room panel.
+              Highlight any passage on the web and the Sandbox reads the page
+              for you — capturing the title and author of the Book, Blog or
+              Website it came from. Adjust it in a tap, and a clean credit line
+              travels with every export.
             </p>
+            <div class="tags">
+              <span class="tag amber">Book</span
+              ><span class="tag amber">Blog</span
+              ><span class="tag amber">Website</span
+              ><span class="tag">Other</span>
+            </div>
           </div>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon">🃏</span>
-          <div class="feature-text">
-            <strong>Constraint Card Engine</strong>
-            <p>
-              Disrupt comfort zones instantly with curated friction loops: The
-              Devil's Advocate, Dictionary Steal, or Cliffhanger.
-            </p>
+      </section>
+
+      <!-- Cards -->
+      <section id="cards">
+        <div class="wrap">
+          <p class="eyebrow">Constraint cards</p>
+          <h2>4 constraint cards + Free Write</h2>
+          <p class="section-intro">
+            Constraints are creative fuel. Pick one, or start with a blank page.
+          </p>
+
+          <div class="cards">
+            <div class="free-write">
+              <span aria-hidden="true">✍️</span
+              ><span
+                ><b>Free Write</b> — the default. No rules, just you, the
+                passage and the clock.</span
+              >
+            </div>
+
+            <article class="card">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">🃏</span>
+                <div>
+                  <span class="card-kicker">Card 2</span>
+                  <h3>The Devil's Advocate</h3>
+                </div>
+              </div>
+              <p>
+                Adversarial constraints that flip your core assumption or strip
+                away a key resource — then a locked 5-minute writing sprint to
+                answer them.
+              </p>
+              <div class="tags">
+                <span class="tag">Catastrophic constraints</span
+                ><span class="tag">5:00 locked sprint</span>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">🎰</span>
+                <div>
+                  <span class="card-kicker">Card 3</span>
+                  <h3>Dictionary &amp; Poetry Steal</h3>
+                </div>
+              </div>
+              <p>
+                Three disruptive word wildcards to steal into your draft, plus
+                structured drafting with live syllable and refrain checks as you
+                write.
+              </p>
+              <div class="tags">
+                <span class="tag amber">Free Verse</span
+                ><span class="tag amber">Sonnet</span
+                ><span class="tag amber">Haiku</span
+                ><span class="tag amber">Limerick</span
+                ><span class="tag amber">Villanelle</span>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">⏳</span>
+                <div>
+                  <span class="card-kicker">Card 4</span>
+                  <h3>The Cliffhanger</h3>
+                </div>
+              </div>
+              <p>
+                A 45-second inactivity lock. Stall, and the session ends on a
+                high-tension prompt — preserving your forward momentum for next
+                time.
+              </p>
+              <div class="tags">
+                <span class="tag">45-second lock</span
+                ><span class="tag">Momentum saved</span>
+              </div>
+            </article>
+
+            <article class="card feature">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">🎵</span>
+                <div>
+                  <span class="card-kicker">Card 5</span>
+                  <h3>Hymn &amp; Song Steal Studio</h3>
+                </div>
+              </div>
+              <p>
+                Turn a passage into music. Build Verse / Chorus / Bridge lyrics,
+                generate a spoken or sung audio track, and record an MP4 lyric
+                video right in your browser.
+              </p>
+              <ul>
+                <li>Lyric builder for hymns and songs</li>
+                <li>Spoken read-through or fully sung track</li>
+                <li>In-browser MP4 lyric video, ready to share</li>
+              </ul>
+            </article>
           </div>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon">⏳</span>
-          <div class="feature-text">
-            <strong>Unforgiving Speed Timers</strong>
-            <p>
-              Force execution and suppress backtracking. Write forward against a
-              hard countdown clock until the project shifts.
-            </p>
+      </section>
+
+      <!-- Launchpad -->
+      <section id="launchpad">
+        <div class="wrap">
+          <p class="eyebrow">One-click Launchpad</p>
+          <h2>Finish here. Publish anywhere.</h2>
+          <p class="section-intro">
+            Your writing — and its source credit — copied and ready, with the
+            destination opened for you.
+          </p>
+          <div class="cards">
+            <div class="card">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">🚀</span>
+                <div>
+                  <span class="card-kicker">Publish</span>
+                  <h3>Substack Drafts &amp; Social Feeds</h3>
+                </div>
+              </div>
+              <p>
+                Send a finished sprint straight to a new Substack draft or a
+                social post, hashtags included.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">📜</span>
+                <div>
+                  <span class="card-kicker">Submit</span>
+                  <h3>Poetry Journals</h3>
+                </div>
+              </div>
+              <p>
+                Copy a clean, submission-ready poem and open the portal in one
+                move.
+              </p>
+              <div class="tags">
+                <span class="tag">Poetry Foundation</span
+                ><span class="tag">Poetry magazine</span
+                ><span class="tag">The Poetry Society</span
+                ><span class="tag">Submittable</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-top">
+                <span class="card-icon" aria-hidden="true">⬇</span>
+                <div>
+                  <span class="card-kicker">Keep</span>
+                  <h3>Save &amp; Share</h3>
+                </div>
+              </div>
+              <p>
+                Save to your computer or share through your system's share
+                sheet.
+              </p>
+              <div class="tags">
+                <span class="tag amber">.txt</span
+                ><span class="tag amber">.md</span
+                ><span class="tag amber">MP4</span>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <!-- BYOK -->
+      <section id="private">
+        <div class="wrap">
+          <p class="eyebrow">Private &amp; flexible</p>
+          <h2>Bring your own key — or none at all</h2>
+          <p class="section-intro">
+            Every card works out of the box with built-in scaffolds and local
+            templates. Add an API key when you want AI-powered drafting,
+            polishing and audio.
+          </p>
+          <div class="card">
+            <div class="card-top">
+              <span class="card-icon" aria-hidden="true">🔐</span>
+              <div>
+                <span class="card-kicker">BYOK</span>
+                <h3>Your keys stay on your device</h3>
+              </div>
+            </div>
+            <p>
+              Keys are stored locally in Chrome, never in the web pages you
+              visit, and are only used to send your request directly to the
+              provider you choose.
+            </p>
+            <div class="keys">
+              <div class="key">
+                <strong>OpenAI</strong
+                ><span>Drafting · polish · spoken audio</span>
+              </div>
+              <div class="key">
+                <strong>Anthropic</strong><span>Drafting · polish</span>
+              </div>
+              <div class="key">
+                <strong>ElevenLabs</strong><span>Sung tracks</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <div class="wrap">
+          <p class="eyebrow">Questions</p>
+          <h2>Good to know</h2>
+          <details>
+            <summary>Do I need an AI key?</summary>
+            <p>
+              No. Every card runs on built-in scaffolds and local templates. An
+              OpenAI or Anthropic key adds full AI drafting and polishing; an
+              ElevenLabs key adds sung tracks.
+            </p>
+          </details>
+          <details>
+            <summary>Why can't I use Backspace?</summary>
+            <p>
+              That's the point of the sprint: you write forward. When the timer
+              ends, the Polish Box unlocks and you can edit freely.
+            </p>
+          </details>
+          <details>
+            <summary>Which poetic forms are supported?</summary>
+            <p>
+              Free Verse, Sonnet, Haiku, Limerick and Villanelle — each with its
+              rules on screen and live line, syllable and refrain checks.
+            </p>
+          </details>
+          <details>
+            <summary>Where does it work?</summary>
+            <p>
+              On almost any website in Google Chrome. Chrome doesn't allow
+              extensions on a few protected pages, such as the Chrome Web Store
+              and chrome:// settings pages.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- Final CTA -->
+      <section class="final">
+        <div class="wrap">
+          <h2>Your next piece is one highlight away.</h2>
+          <p class="section-intro">
+            The Creative Sandbox 1.1 is free on the Chrome Web Store.
+          </p>
+          <a
+            class="cta"
+            href="https://google.com"
+            target="_blank"
+            rel="noopener"
+            >Add to Chrome — it's free</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer class="site">
+      <div class="wrap">
+        <span>© 2026 The Creative Sandbox · creativesandbox.co.uk</span>
+        <span>Sister project: The Midnight Dream Catcher</span>
       </div>
-
-      <footer>
-        &copy; 2026 The Creative Sandbox. Free, serverless, and secure.
-      </footer>
-    </div>
+    </footer>
   </body>
 </html>
