@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — The Creative Sandbox</title>
+    <style>
+      body {
+        background: #000000;
+        color: #f3f4f6;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.65;
+        max-width: 740px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      h1,
+      h2 {
+        color: #ffb300;
+      }
+      h1 {
+        font-size: 1.85rem;
+        margin-bottom: 0.4rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+        margin-top: 2rem;
+      }
+      a {
+        color: #ffb300;
+      }
+      .meta {
+        color: #9ca3af;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+      ul {
+        padding-left: 1.25rem;
+      }
+      li {
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Privacy Policy — The Creative Sandbox</h1>
+    <p class="meta">
+      Effective Date: 13 November 2026 &middot; Website:
+      <a href="https://creativesandbox.co.uk">creativesandbox.co.uk</a>
+    </p>
+
+    <p>
+      This Privacy Policy explains how
+      <strong>The Creative Sandbox</strong> Chrome Extension ("the Extension")
+      collects, handles, stores, and shares user data.
+    </p>
+
+    <h2>1. User Data Collection</h2>
+    <p>
+      The Extension does not require user accounts, logins, or personal
+      registration. It processes only the data you explicitly provide or capture
+      while using the tool:
+    </p>
+    <ul>
+      <li>
+        <strong>Webpage Text &amp; Page Metadata:</strong> When you highlight
+        text on a webpage and select "Send to Creative Sandbox" (or invoke the
+        extension), the Extension reads your selected passage along with the
+        webpage's title, URL, and author metadata to populate the Source
+        attribution box.
+      </li>
+      <li>
+        <strong>User-Authored Drafts &amp; Prompts:</strong> Text, poetry,
+        lyrics, and audio/video files you write or generate inside the side
+        panel or popup studio.
+      </li>
+      <li>
+        <strong>User-Provided API Keys &amp; Tokens:</strong> Optional
+        Bring-Your-Own-Key (BYOK) credentials that you voluntarily enter into
+        Settings (OpenAI API key, Anthropic API key, ElevenLabs API key, or
+        Cloudflare Worker upload token).
+      </li>
+    </ul>
+
+    <h2>2. How User Data Is Used &amp; Handled</h2>
+    <ul>
+      <li>
+        <strong>Core Writing &amp; Formatting:</strong> Highlighted quotes,
+        drafts, and timers are processed locally in your browser to run writing
+        sprints, syllable/meter checks, and local text formatting.
+      </li>
+      <li>
+        <strong>On-Demand AI &amp; Media Generation:</strong> When you
+        explicitly click a generation or polish button (such as AI Poetry
+        Polish, Devil's Advocate prompts, or Hymn/Song audio), your draft text
+        is transmitted securely over HTTPS to your selected provider to return
+        the requested output.
+      </li>
+      <li>
+        <strong>Optional Shareable Media Links:</strong> Only when you
+        explicitly click "Get share link" in Card 5 does the Extension upload
+        your rendered MP4 or audio file to generate a shareable link.
+      </li>
+      <li>
+        <strong>No Tracking or Advertising:</strong> We do not collect browsing
+        history across websites, track user analytics, sell user data, or serve
+        advertisements.
+      </li>
+    </ul>
+
+    <h2>3. Data Storage &amp; Security</h2>
+    <ul>
+      <li>
+        <strong>Local Browser Storage:</strong> All active drafts, source
+        attribution settings, preferences, and optional BYOK API keys are stored
+        locally on your device using <code>chrome.storage.local</code>. Your API
+        keys are never transmitted to our servers.
+      </li>
+      <li>
+        <strong>Cloudflare R2 Temporary Media Storage:</strong> If you choose to
+        generate a shareable link for an MP4 lyric video or audio track in Card
+        5, that media file is stored on Cloudflare R2 object storage solely to
+        serve playback via the generated share URL.
+      </li>
+    </ul>
+
+    <h2>4. Third-Party Parties With Whom Data May Be Shared</h2>
+    <p>
+      User data is never sold or shared with data brokers. Data is transmitted
+      to third-party processors <strong>only</strong> when you explicitly
+      trigger an optional AI or cloud-sharing action:
+    </p>
+    <ul>
+      <li>
+        <strong>OpenAI (://openai.com):</strong> Receives your prompt/draft text
+        and your personal OpenAI API key when you select OpenAI for text
+        polishing, constraint generation, or text-to-speech audio.
+      </li>
+      <li>
+        <strong>Anthropic (://anthropic.com):</strong> Receives your
+        prompt/draft text and your personal Anthropic API key when you select
+        Anthropic (Claude) for text polishing or constraint generation.
+      </li>
+      <li>
+        <strong>ElevenLabs (api.elevenlabs.io):</strong> Receives your
+        lyrics/text and your personal ElevenLabs API key when you generate sung
+        vocals or voice audio in Card 5.
+      </li>
+      <li>
+        <strong
+          >Cloudflare Workers &amp; Cloudflare R2 (*.workers.dev /
+          ://cloudflarestorage.com):</strong
+        >
+        Receives your rendered MP4/audio file and upload token solely when you
+        explicitly click "Get share link" to host a shareable media link.
+      </li>
+    </ul>
+
+    <h2>5. Data Deletion &amp; User Control</h2>
+    <p>
+      You retain full control over your data. You can clear saved API keys at
+      any time using the "Clear Key" button in Settings, delete saved drafts
+      inside the extension, or remove all locally stored data by uninstalling
+      the Extension from Chrome.
+    </p>
+
+    <h2>6. Contact</h2>
+    <p>
+      If you have any questions about this Privacy Policy or your data, contact
+      us at <a href="mailto:cmukabi@gmail.com">cmukabi@gmail.com</a>.
+    </p>
+  </body>
+</html>
